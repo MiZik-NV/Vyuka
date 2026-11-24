@@ -6,157 +6,120 @@
 <title>Rastrová grafika</title>
 
 <style>
-body{
-    font-family: Arial, sans-serif;
-    margin:20px;
+:root {
+    --navy: #142b46; --ink: #17263b; --muted: #475569;
+    --blue: #174eac; --blue-dark: #123e88; --pale: #f1f5f9;
+    --line: #dbe3ec; --soft: #e8efff; --white: #fff;
 }
-
-h1{
-    text-align:center;
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.5 "Segoe UI", system-ui, sans-serif; background: var(--pale); color: var(--ink); }
+h1,h2,h3,p { margin: 0; }
+.hero { background: var(--navy); color: white; padding: 23px clamp(16px,3vw,40px); }
+.hero-inner { max-width: 1500px; margin: auto; display: flex; align-items: center; gap: 16px; }
+.mark { flex: 0 0 48px; height: 48px; display: grid; place-items: center; background: #e8efff; color: #2458b7; border-radius: 12px; }
+.mark svg { width: 29px; height: 29px; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; color: #cbd9e9; }
+h1 { font-size: clamp(23px,3vw,32px); line-height: 1.18; margin-top: 3px; letter-spacing: -.025em; }
+main { max-width: 1580px; margin: auto; padding: 20px clamp(12px,3vw,40px) 28px; }
+.instructions { display: flex; align-items: flex-start; gap: 12px; background: var(--soft); border: 1px solid #cdddf8; border-radius: 12px; padding: 12px 16px; color: #24446d; margin-bottom: 16px; font-size: 14px; }
+.instructions svg { flex: 0 0 22px; margin-top: 1px; }
+.instructions strong { color: var(--navy); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-bottom: 18px; background: white; border: 1px solid var(--line); padding: 14px 16px; border-radius: 14px; box-shadow: 0 3px 10px #142b4608; }
+.control-group { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dimension { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+.dimension input { width: 72px; height: 39px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 8px; color: var(--ink); font: inherit; background: white; }
+button { font: inherit; font-size: 14px; font-weight: 650; min-height: 39px; padding: 7px 13px; border: 1px solid #cbd5e1; background: white; border-radius: 9px; cursor: pointer; color: var(--ink); }
+button:hover { background: #f1f5ff; border-color: #8aa8d5; }
+button.primary { background: var(--blue); border-color: var(--blue); color: white; }
+button.primary:hover { background: var(--blue-dark); }
+button.danger { color: #a12828; }
+button.danger:hover { background: #fff1f1; border-color: #e6b5b5; }
+button:focus-visible,.dimension input:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+.separator { align-self: stretch; width: 1px; background: var(--line); min-height: 30px; }
+.container { display: grid; grid-template-columns: 188px minmax(0,1fr); gap: 16px; align-items: start; }
+.panel { background: white; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 3px 10px #142b4608; min-width: 0; overflow: hidden; }
+.panel-head { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); }
+.panel-head h2,.panel-head h3 { font-size: 17px; line-height: 1.3; letter-spacing: -.015em; }
+.panel-head p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.palette { display: flex; flex-direction: column; gap: 5px; padding: 12px 16px; }
+.palette-item { display: flex; align-items: center; gap: 8px; }
+.palette-label { width: 34px; height: 32px; display: grid; place-items: center; border: 1px solid #cbd5e1; background: #f5f8ff; color: var(--blue); border-radius: 7px; font-weight: 700; cursor: pointer; }
+.palette-label:hover { background: #dbeafe; border-color: var(--blue); }
+.color-preview { width: 54px; height: 32px; border: 1px solid #aab6c5; border-radius: 7px; }
+.grids { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; min-width: 0; align-items: start; }
+.grid-scroll { overflow: auto; padding: 16px; min-height: 100px; scrollbar-color: #a9b9cc #f1f5f9; }
+.grid { display: grid; width: max-content; border: 1px solid #64748b; background: #fff; }
+.input-cell,.color-cell { width: 30px; height: 30px; border: 1px solid #cbd5e1; box-sizing: border-box; }
+.input-cell { border-radius: 0; text-align: center; font: 600 15px/1 "Segoe UI", system-ui,sans-serif; padding: 0; color: var(--ink); background: #fff; min-width: 0; }
+.input-cell:hover { background: #eff6ff; }
+.input-cell:focus { position: relative; z-index: 1; outline: 2px solid #2563eb; outline-offset: -2px; background: #eff6ff; }
+.color-cell { border-color: #aab6c5; }
+footer { max-width: 1580px; margin: auto; padding: 14px clamp(12px,3vw,40px); border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+@media(max-width: 1050px) {
+    .container { grid-template-columns: minmax(0,1fr); }
+    .palette { flex-direction: row; flex-wrap: wrap; gap: 8px 14px; }
+    .palette-item { gap: 4px; }
+    .color-preview { width: 34px; }
 }
-
-.controls{
-    margin-bottom:20px;
-}
-
-button{
-    margin:2px;
-    padding:6px 10px;
-}
-
-.container{
-    display:flex;
-    gap:30px;
-    align-items:flex-start;
-}
-
-.palette{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.palette-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.palette-label{
-    width:40px;
-    height:40px;
-    border:1px solid black;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.color-preview{
-    width:40px;
-    height:40px;
-    border:1px solid black;
-}
-
-.grids{
-    display:flex;
-    gap:40px;
-}
-
-.grid-wrapper{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
-
-.grid{
-    display:grid;
-    border:2px solid black;
-}
-
-.input-cell{
-    width:30px;
-    height:30px;
-    border:1px solid #999;
-    text-align:center;
-    font-size:16px;
-    padding:0;
-    box-sizing:border-box;
-}
-
-.color-cell{
-    width:30px;
-    height:30px;
-    border:1px solid #999;
-    box-sizing:border-box;
-}
-
-.instructions{
-    background:#eef7ff;
-    padding:10px;
-    margin-bottom:15px;
-    border-radius:8px;
+@media(max-width: 700px) {
+    .grids { grid-template-columns: minmax(0,1fr); }
+    .separator { display: none; }
+    .controls { gap: 10px; }
+    .grid-scroll { padding: 12px; }
+    .hero { padding-block: 18px; }
 }
 </style>
 
 </head>
 <body>
 
-<h1>Jak funguje rastrová grafika</h1>
-
-<div class="instructions">
-Vyber barvy pro čísla 0–9. Do levého rastru zapisuj čísla a sleduj,
-jak se v pravém rastru zobrazují odpovídající barvy.
-</div>
-
-<div class="controls">
-
-    Šířka:
-    <input type="number" id="gridWidth" value="10" min="1" max="50">
-
-    Výška:
-    <input type="number" id="gridHeight" value="10" min="1" max="50">
-
-    <button onclick="createGrid()">Vytvořit rastr</button>
-	
-	<br>	<br>
-
-    <button onclick="fillAll()">Vybarvi vše</button>
-
-    <button onclick="clearAll()">Vymazat vše</button>
-
-    <button onclick="savePicture()">Uložit</button>
-
-    <button onclick="loadPicture()">Načíst</button>
-
-    <input
-        type="file"
-        id="fileLoader"
-        accept=".json"
-        style="display:none">
-
-</div>
-
-<div class="container">
-
-    <div class="palette" id="palette"></div>
-
-    <div class="grids">
-
-        <div class="grid-wrapper">
-            <h3>Data (čísla)</h3>
-            <div class="grid" id="inputGrid"></div>
-        </div>
-
-        <div class="grid-wrapper">
-            <h3>Zobrazení (barvy)</h3>
-            <div class="grid" id="colorGrid"></div>
-        </div>
-
+<header class="hero">
+    <div class="hero-inner">
+        <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><path d="M9 9h6v6H9z" fill="currentColor" stroke="none"/></svg></span>
+        <div><p class="eyebrow">INFORMATIKA · 6. ROČNÍK</p><h1>Jak funguje rastrová grafika</h1></div>
     </div>
-
-</div>
+</header>
+<main>
+    <div class="instructions">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v1" stroke-linecap="round"/></svg>
+        <p><strong>Jak na to:</strong> Vyber barvy pro čísla 0–9 kliknutím na číslo v paletě. Do rastru <strong>Data</strong> zapisuj čísla a sleduj, jak se v rastru <strong>Zobrazení</strong> objevují odpovídající barvy.</p>
+    </div>
+    <div class="controls" aria-label="Ovládání rastru">
+        <div class="control-group">
+            <label class="dimension" for="gridWidth">Šířka: <input type="number" id="gridWidth" value="10" min="1" max="20"></label>
+            <label class="dimension" for="gridHeight">Výška: <input type="number" id="gridHeight" value="10" min="1" max="20"></label>
+            <button class="primary" onclick="createGrid()">Vytvořit rastr</button>
+        </div>
+        <span class="separator" aria-hidden="true"></span>
+        <div class="control-group">
+            <button onclick="fillAll()">Vybarvi vše</button>
+            <button class="danger" onclick="clearAll()">Vymazat vše</button>
+        </div>
+        <span class="separator" aria-hidden="true"></span>
+        <div class="control-group">
+            <button onclick="savePicture()">Uložit</button>
+            <button onclick="loadPicture()">Načíst</button>
+            <input type="file" id="fileLoader" accept=".json" style="display:none">
+        </div>
+    </div>
+    <div class="container">
+        <aside class="panel">
+            <div class="panel-head"><h2>Paleta barev</h2><p>Klikni na číslo a změň jeho barvu.</p></div>
+            <div class="palette" id="palette"></div>
+        </aside>
+        <div class="grids">
+            <section class="panel grid-wrapper" aria-labelledby="dataTitle">
+                <div class="panel-head"><h3 id="dataTitle">Data (čísla)</h3><p>Každá buňka obsahuje číslo 0–9.</p></div>
+                <div class="grid-scroll"><div class="grid" id="inputGrid"></div></div>
+            </section>
+            <section class="panel grid-wrapper" aria-labelledby="colorTitle">
+                <div class="panel-head"><h3 id="colorTitle">Zobrazení (barvy)</h3><p>Každá buňka zobrazuje jeden pixel.</p></div>
+                <div class="grid-scroll"><div class="grid" id="colorGrid"></div></div>
+            </section>
+        </div>
+    </div>
+</main>
+<footer>Výukové aplikace pro hodiny informatiky · Obrázek jako data</footer>
 
 <script>
 
@@ -219,11 +182,14 @@ let outputs = [];
 
 function createGrid(){
 
-    const width =
-        parseInt(document.getElementById("gridWidth").value);
+    const width = Math.max(1, Math.min(20,
+		parseInt(document.getElementById("gridWidth").value) || 10));
 
-    const height =
-        parseInt(document.getElementById("gridHeight").value);
+	const height = Math.max(1, Math.min(20,
+		parseInt(document.getElementById("gridHeight").value) || 10));
+
+	document.getElementById("gridWidth").value = width;
+	document.getElementById("gridHeight").value = height;
 
     inputGrid.innerHTML = "";
     colorGrid.innerHTML = "";
