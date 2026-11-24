@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rastrová grafika</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    margin:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+.controls{
+    margin-bottom:20px;
+}
+
+button{
+    margin:2px;
+    padding:6px 10px;
+}
+
+.container{
+    display:flex;
+    gap:30px;
+    align-items:flex-start;
+}
+
+.palette{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.palette-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.palette-label{
+    width:40px;
+    height:40px;
+    border:1px solid black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.color-preview{
+    width:40px;
+    height:40px;
+    border:1px solid black;
+}
+
+.grids{
+    display:flex;
+    gap:40px;
+}
+
+.grid-wrapper{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.grid{
+    display:grid;
+    border:2px solid black;
+}
+
+.input-cell{
+    width:30px;
+    height:30px;
+    border:1px solid #999;
+    text-align:center;
+    font-size:16px;
+    padding:0;
+    box-sizing:border-box;
+}
+
+.color-cell{
+    width:30px;
+    height:30px;
+    border:1px solid #999;
+    box-sizing:border-box;
+}
+
+.instructions{
+    background:#eef7ff;
+    padding:10px;
+    margin-bottom:15px;
+    border-radius:8px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Jak funguje rastrová grafika</h1>
+
+<div class="instructions">
+Vyber barvy pro čísla 0–9. Do levého rastru zapisuj čísla a sleduj,
+jak se v pravém rastru zobrazují odpovídající barvy.
+</div>
+
+<div class="controls">
+
+    Šířka:
+    <input type="number" id="gridWidth" value="10" min="1" max="50">
+
+    Výška:
+    <input type="number" id="gridHeight" value="10" min="1" max="50">
+
+    <button onclick="createGrid()">Vytvořit rastr</button>
+	
+	<br>	<br>
+
+    <button onclick="fillAll()">Vybarvi vše</button>
+
+    <button onclick="clearAll()">Vymazat vše</button>
+
+    <button onclick="savePicture()">Uložit</button>
+
+    <button onclick="loadPicture()">Načíst</button>
+
+    <input
+        type="file"
+        id="fileLoader"
+        accept=".json"
+        style="display:none">
+
+</div>
+
+<div class="container">
+
+    <div class="palette" id="palette"></div>
+
+    <div class="grids">
+
+        <div class="grid-wrapper">
+            <h3>Data (čísla)</h3>
+            <div class="grid" id="inputGrid"></div>
+        </div>
+
+        <div class="grid-wrapper">
+            <h3>Zobrazení (barvy)</h3>
+            <div class="grid" id="colorGrid"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const paletteColors = {
+    0:"#ffffff",
+    1:"#000000",
+    2:"#ff0000",
+    3:"#00ff00",
+    4:"#0000ff",
+    5:"#ffff00",
+    6:"#ff00ff",
+    7:"#00ffff",
+    8:"#808080",
+    9:"#ffa500"
+};
+
+const paletteDiv = document.getElementById("palette");
+
+for(let i=0;i<=9;i++){
+
+    const row = document.createElement("div");
+    row.className = "palette-item";
+
+    const label = document.createElement("div");
+    label.className = "palette-label";
+    label.textContent = i;
+
+    const preview = document.createElement("div");
+    preview.className = "color-preview";
+    preview.style.backgroundColor = paletteColors[i];
+
+    const picker = document.createElement("input");
+    picker.type = "color";
+    picker.value = paletteColors[i];
+    picker.style.display = "none";
+
+    label.onclick = () => picker.click();
+
+    picker.oninput = () => {
+
+        paletteColors[i] = picker.value;
+
+        preview.style.backgroundColor = picker.value;
+
+        updateColors();
+    };
+
+    row.appendChild(label);
+    row.appendChild(preview);
+    row.appendChild(picker);
+
+    paletteDiv.appendChild(row);
+}
+
+const inputGrid = document.getElementById("inputGrid");
+const colorGrid = document.getElementById("colorGrid");
+
+let inputs = [];
+let outputs = [];
+
+function createGrid(){
+
+    const width =
+        parseInt(document.getElementById("gridWidth").value);
+
+    const height =
+        parseInt(document.getElementById("gridHeight").value);
+
+    inputGrid.innerHTML = "";
+    colorGrid.innerHTML = "";
+
+    inputGrid.style.gridTemplateColumns =
+        `repeat(${width},30px)`;
+
+    colorGrid.style.gridTemplateColumns =
+        `repeat(${width},30px)`;
+
+    inputs = [];
+    outputs = [];
+
+    for(let i=0;i<width*height;i++){
+
+        const input = document.createElement("input");
+        input.className = "input-cell";
+        input.maxLength = 1;
+
+        input.addEventListener("input", () => {
+
+            if(!/^[0-9]?$/.test(input.value)){
+                input.value = "";
+            }
+
+            updateColors();
+        });
+
+        const output = document.createElement("div");
+        output.className = "color-cell";
+
+        inputGrid.appendChild(input);
+        colorGrid.appendChild(output);
+
+        inputs.push(input);
+        outputs.push(output);
+    }
+
+    updateColors();
+}
+
+function updateColors(){
+
+    inputs.forEach((input,index)=>{
+
+        const value = input.value;
+
+        if(value === ""){
+            outputs[index].style.backgroundColor = "white";
+        }else{
+            outputs[index].style.backgroundColor =
+                paletteColors[value];
+        }
+
+    });
+}
+
+function fillAll(){
+
+    const value = prompt("Zadej číslo 0-9");
+
+    if(value === null) return;
+
+    if(!/^[0-9]$/.test(value)){
+        alert("Musíš zadat číslo 0 až 9.");
+        return;
+    }
+
+    inputs.forEach(input=>{
+        input.value = value;
+    });
+
+    updateColors();
+}
+
+function clearAll(){
+
+    if(!confirm("Opravdu vymazat celý obrázek?")){
+        return;
+    }
+
+    inputs.forEach(input=>{
+        input.value = "";
+    });
+
+    updateColors();
+}
+
+function savePicture(){
+
+    const data = {
+
+        width:
+            parseInt(document.getElementById("gridWidth").value),
+
+        height:
+            parseInt(document.getElementById("gridHeight").value),
+
+        palette: paletteColors,
+
+        pixels: inputs.map(input=>input.value)
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(data,null,2)],
+        {type:"application/json"}
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "obrazek.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+function loadPicture(){
+
+    document.getElementById("fileLoader").click();
+}
+
+document.getElementById("fileLoader")
+.addEventListener("change", function(event){
+
+    const file = event.target.files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        try{
+
+            const data =
+                JSON.parse(e.target.result);
+
+            document.getElementById("gridWidth").value =
+                data.width;
+
+            document.getElementById("gridHeight").value =
+                data.height;
+
+            createGrid();
+
+            for(let i=0;i<=9;i++){
+
+                if(data.palette[i]){
+
+                    paletteColors[i] =
+                        data.palette[i];
+                }
+            }
+
+            document
+                .querySelectorAll(".color-preview")
+                .forEach((preview,index)=>{
+
+                    preview.style.backgroundColor =
+                        paletteColors[index];
+                });
+
+            document
+                .querySelectorAll('input[type="color"]')
+                .forEach((picker,index)=>{
+
+                    picker.value =
+                        paletteColors[index];
+                });
+
+            data.pixels.forEach(
+                (value,index)=>{
+
+                if(inputs[index]){
+
+                    inputs[index].value =
+                        value;
+                }
+
+            });
+
+            updateColors();
+
+        }
+        catch{
+
+            alert("Soubor není platný.");
+        }
+
+    };
+
+    reader.readAsText(file);
+
+});
+
+createGrid();
+
+</script>
+
+</body>
+</html>
