@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Školní průzkumník</title>
+<style>
+:root{--ink:#182e39;--teal:#106858;--accent:#cdece1;--pale:#f3f7f4;--line:#d7e1dd;--muted:#52655e;--white:#fff;--gold:#e7af46;--red:#9a3c31}
+*{box-sizing:border-box}body{margin:0;background:#eaf0ec;color:var(--ink);font:16px/1.45 "Segoe UI",system-ui,sans-serif}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.52}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #207ca2;outline-offset:2px}h1,h2,h3,p{margin:0}h1{font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.045em}h2{font-size:1.33rem;letter-spacing:-.025em}button{border:1px solid var(--line);background:white;border-radius:9px;min-height:39px;padding:6px 12px;font-weight:600}button:hover:enabled{background:#eff7f3;border-color:#86b2a2}.primary{background:var(--teal);color:white;border-color:var(--teal)}.primary:hover:enabled{background:#0a5145}.danger{color:var(--red)}.small{font-size:.87rem;color:var(--muted)}[hidden]{display:none!important}
+.shell{max-width:1370px;margin:0 auto;padding:clamp(12px,3vw,40px)}.top,.top-actions,.brand,.toolbar,.bar,.crumbs,.section-head,.footer,.programs,.dialog-head,.actions,.menu,.status,.program{display:flex;align-items:center;gap:10px}.top,.section-head,.dialog-head,.footer{justify-content:space-between}.top{margin-bottom:20px;flex-wrap:wrap}.brand{gap:15px}.mark{width:49px;height:49px;background:#183e35;border-radius:16px;display:grid;place-items:center}.brand p{color:var(--muted);font-size:.88rem}.top-actions{flex-wrap:wrap}.switch{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}.switch input{width:19px;height:19px;accent-color:var(--teal)}
+.window{background:white;border:1px solid #c6d6ce;border-radius:19px;overflow:hidden;box-shadow:0 12px 38px #142f2410}.bar{background:#173f35;padding:10px 16px;color:white;min-height:54px}.bar button{background:transparent;color:inherit;border-color:#56776b}.bar button:hover:enabled{background:#2c554a}.bar .crumbs{flex-wrap:wrap;min-width:0}.crumbs{gap:6px;overflow-wrap:anywhere}.crumbs button{font-size:.9rem;min-height:31px;padding:3px 8px}.crumbs span{font-size:.92rem}.toolbar{flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}.divider{height:25px;border-left:1px solid var(--line);margin:0 2px}
+.panes{display:grid;grid-template-columns:minmax(175px,27%) minmax(0,1fr);min-height:365px}.side{background:#f5f8f5;border-right:1px solid var(--line);padding:18px 9px;overflow:auto;max-height:65vh}.side h2{font-size:.95rem;padding:0 9px 10px}.tree{list-style:none;margin:0;padding:0}.tree .tree{margin-left:16px;padding-left:5px;border-left:1px solid #c8d6cf}.tree-row{display:flex;align-items:center;gap:1px;border-radius:7px}.tree-row.active{background:#d5ece1}.tree-row button{background:none;border:0}.twist,.spacer{width:25px;min-width:25px;padding:0;display:inline-grid;place-items:center}.twist{color:#37634e}.node{display:flex;align-items:center;gap:7px;text-align:left;padding:5px 4px;min-height:38px;font-size:.91rem;line-height:1.28;overflow-wrap:anywhere}.right{padding:19px clamp(12px,2vw,26px);min-width:0}.section-head{margin-bottom:15px;gap:9px;flex-wrap:wrap}.tag{font-size:.78rem;font-weight:650;border-radius:15px;background:#eff3f0;color:#3d5b4d;padding:4px 10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:12px}.card{text-align:left;border-radius:14px;min-height:147px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:15px;gap:5px}.card strong{overflow-wrap:anywhere}.card .drive{margin-bottom:5px}.drive{background:#dce7f6;color:#345573;font-weight:800;padding:3px 7px;border-radius:7px;display:inline-grid;place-items:center;min-width:32px;flex:none}.drive.V{background:#fff0cd;color:#77550d}.drive.U{background:var(--accent);color:#155f48}.card .drive{font-size:1.22rem;min-width:45px;min-height:38px}
+.folder{display:inline-block;position:relative;flex:none;width:20px;height:14px;margin:4px 0 1px;background:#edbb56;border:1px solid #ba882e;border-radius:2px 3px 3px 3px}.folder:before{content:"";position:absolute;top:-5px;left:-1px;width:9px;height:4px;background:#edbb56;border:1px solid #ba882e;border-bottom:0;border-radius:3px 3px 0 0}.mark .folder{transform:scale(1.38)}
+.list{border-top:1px solid var(--line);margin-top:4px}.row{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:4px;min-width:0}.row.chosen{background:#e2f2e9}.row-main{border:0;background:transparent;display:flex;align-items:center;gap:10px;text-align:left;min-width:0;flex:1;overflow-wrap:anywhere}.open{font-size:.84rem;padding:4px 8px;min-height:33px}.file-icon{font-size:.68rem;font-weight:800;color:#35556d;background:#e4edf4;border-radius:4px;padding:3px}.empty{padding:25px 15px;border:1px dashed #bccfc4;border-radius:12px;color:var(--muted);text-align:center}
+.status{border-top:1px solid var(--line);padding:10px 16px;font-size:.88rem;background:#f4f8f4;min-height:43px;overflow-wrap:anywhere}.status.warn,.error{color:#853515}.status.warn{background:#fff0db}.footer{gap:14px;flex-wrap:wrap;padding:15px 2px}.programs{flex-wrap:wrap}.program{padding:8px 10px}.app-icon{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;font-size:1.04rem;background:#f7e8cc;color:#654b15}.note{background:#dae8f7;color:#294d70}.slide{background:#f7ddcf;color:#7e4432}
+dialog{border:1px solid #a9c4b6;border-radius:16px;padding:0;box-shadow:0 18px 80px #0e2c2340;color:var(--ink);width:min(530px,calc(100% - 22px));max-height:90dvh;overflow:auto}dialog::backdrop{background:#112e255c}.dialog-head{background:#e9f3ed;padding:13px 17px;border-bottom:1px solid var(--line)}.body{padding:16px}.body label{display:block;margin:12px 0 4px;font-weight:650}.body input,.body select,textarea{width:100%;border:1px solid #90aa9b;border-radius:7px;padding:8px}.actions{justify-content:flex-end;flex-wrap:wrap;margin-top:15px}.error{font-size:.9rem;margin-top:7px}.error:empty{display:none}.where{overflow-wrap:anywhere;font-weight:650}.picker-list{max-height:170px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:4px}.picker-list button{display:flex;gap:9px;align-items:center;text-align:left;width:100%;border:0;background:white;overflow-wrap:anywhere}.picker-path{display:flex;align-items:center;gap:8px;margin:10px 0}.picker-list .empty{border:0;font-size:.87rem;padding:12px}.editor{width:min(670px,calc(100% - 22px))}.menu{position:relative;border-bottom:1px solid var(--line);padding:5px 12px}.menu button{border:0}.dropdown{position:absolute;top:100%;left:12px;background:white;border:1px solid var(--line);box-shadow:0 5px 14px #162c2420;padding:4px;border-radius:8px;z-index:2}.workarea{padding:16px;background:#f3f5f2}.workarea textarea{resize:vertical;min-height:150px;display:block}.workarea label{display:block;font-weight:650;margin-bottom:6px}.paper{background:white;border:1px solid #bed0c4;border-radius:7px}.paint{width:100%;height:auto;display:block;touch-action:none;cursor:crosshair}.slide-page{padding:36px 17px;border-left:6px solid #db9671;min-height:150px}.slide-page input{border:0;border-bottom:1px solid var(--line);width:100%;padding:8px 0;font:inherit;font-size:1.4rem}.editor-status{padding:10px 16px;font-size:.88rem;color:var(--muted);overflow-wrap:anywhere}
+@media(max-width:650px){.shell{padding:10px}.panes{grid-template-columns:minmax(125px,36%) minmax(0,1fr)}.node{font-size:.8rem}.tree .tree{margin-left:7px;padding-left:3px}.right,.side{padding:10px 5px}.twist,.spacer{width:17px;min-width:17px}.bar,.toolbar{padding:8px}.toolbar{gap:5px}.toolbar button{font-size:.85rem}.divider{display:none}.row{flex-wrap:wrap}.row-main{flex-basis:100%}.card{min-height:auto;padding:9px;gap:2px}.card .drive{font-size:.9rem;min-height:24px;margin:0}.footer{display:block}.programs{margin-top:6px;gap:5px}.program{font-size:.82rem;gap:4px}.program .app-icon{width:20px;height:20px}.cards{gap:6px}.top{gap:8px}}
+.drop-target{outline:3px dashed var(--teal);outline-offset:-3px;background:#d8f1e4!important}
+.cut-item .row-main,.cut-item .node{opacity:.6}
+.clip-note{padding:9px 16px;background:#e6f2ed;color:#234d3d;font-size:.9rem;overflow-wrap:anywhere;border-top:1px solid var(--line)}
+#contents{min-height:145px}
+</style></head><body>
+<div class="shell">
+<header class="top"><div class="brand"><div class="mark" aria-hidden="true"><i class="folder"></i></div><div><h1>Školní průzkumník</h1><p>Ukázkové soubory a složky</p></div></div><div class="top-actions"><label class="switch"><input type="checkbox" id="admin"> Režim správce</label><button id="reset">Začít znovu</button></div></header>
+<main class="window"><div class="bar"><button id="up" title="O úroveň výš" aria-label="O úroveň výš">↑</button><nav class="crumbs" id="crumbs" aria-label="Cesta"></nav></div>
+<div class="toolbar"><button class="primary" id="create">＋ Nová složka</button><span class="divider"></span><button id="rename">Přejmenovat</button><button id="cut">Vyjmout</button><button id="copy">Zkopírovat</button><button id="paste" title="Vložit do otevřené složky">Vložit</button><button id="delete" class="danger">Smazat</button></div>
+<div class="panes"><aside class="side"><h2>Strom složek</h2><nav id="tree" aria-label="Strom složek"></nav></aside><section class="right"><div class="section-head"><h2 id="heading"></h2><span class="tag" id="access"></span></div><div id="contents"></div></section></div>
+<p id="clipNote" class="clip-note" role="status" hidden></p><p id="status" class="status" role="status"></p></main>
+<footer class="footer"><strong>Programy</strong><div class="programs" id="programs"></div></footer>
+</div>
+<dialog id="editor" class="editor" aria-labelledby="editorTitle"><header class="dialog-head"><h2 id="editorTitle"></h2><button id="closeEditor" aria-label="Zavřít program">Zavřít</button></header><nav class="menu" aria-label="Nabídka programu"><button id="fileMenu" aria-expanded="false" aria-controls="dropdown">Soubor ▾</button><div id="dropdown" class="dropdown" hidden><button id="saveAs">Uložit jako…</button></div></nav><div class="workarea" id="workarea"></div><p id="editorStatus" class="editor-status" role="status"></p></dialog>
+<dialog id="formDialog" aria-labelledby="formTitle"><header class="dialog-head"><h2 id="formTitle"></h2></header><div class="body" id="formBody"></div></dialog>
+<dialog id="confirmation" aria-labelledby="confirmTitle"><header class="dialog-head"><h2 id="confirmTitle"></h2></header><div class="body"><p id="confirmText"></p><div class="actions"><button id="no">Zrušit</button><button id="yes" class="primary"></button></div></div></dialog>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const apps = {
+  paint:{name:"Malování", icon:"✎", ext:"png", initial:"Obrázek"},
+  note:{name:"Poznámkový blok", icon:"≡", ext:"txt", initial:"Poznámka"},
+  slide:{name:"Prezentace", icon:"▣", ext:"pptx", initial:"Prezentace"}
+};
+const driveNames = {C:"Windows", V:"Výukové materiály", U:"Novák"};
+const driveTips = {C:"Systém a uživatelé", V:"Materiály od učitele", U:"Osobní síťový disk"};
+function el(tag,cls,text){
+  const n=document.createElement(tag);
+  if(cls)n.className=cls;
+  if(text!==undefined)n.textContent=text;
+  return n;
+}
+function btn(text,action,cls){
+  const n=el("button",cls,text); n.type="button"; n.onclick=action; return n;
+}
+function folder(name,parent=null){
+  const n={name,parent,children:[]}; if(parent)parent.children.push(n); return n;
+}
+const isDir=n=>!!n && Array.isArray(n.children);
+const sorted=n=>[...n.children].sort((a,b)=>Number(isDir(b))-Number(isDir(a))||a.name.localeCompare(b.name,"cs",{numeric:true}));
+const sameName=(a,b)=>a.normalize("NFC").toLocaleLowerCase("cs")===b.normalize("NFC").toLocaleLowerCase("cs");
+const findName=(dir,name)=>dir.children.find(n=>sameName(n.name,name));
+function chain(n){const path=[];for(let p=n;p;p=p.parent)path.unshift(p);return path;}
+const driveOf=n=>chain(n)[0];
+const pathOf=n=>chain(n).map(p=>p.key?p.key+":":p.name).join(" / ");
+const labelOf=n=>n.key?n.name+" ("+n.key+":)":n.name;
+const editable=n=>n && ($("admin").checked || driveOf(n).key==="U");
+function denied(n){return driveOf(n).key==="V"?"Výukové materiály může měnit učitel. Svou práci ulož na osobní disk (U:).":"Na C: jsou Windows a složky uživatelů. Svou práci ulož na osobní disk (U:).";}
+function nameError(name){
+  if(!name)return "Napiš název.";
+  if(/[<>:"/\\|?*\u0000-\u001f]/.test(name)||name.endsWith(".")||/^(con|prn|aux|nul|com[1-9¹²³]|lpt[1-9¹²³])(\.|$)/i.test(name))return "Zkus název z písmen, číslic a mezer.";
+  if(name.length>120)return "Použij kratší název (nejvýše 120 znaků).";
+  return "";
+}
+let drives,current,selected,expanded,doc,clipboard,dragged;
+function reset(){
+  drives=Object.entries(driveNames).map(([key,name])=>Object.assign(folder(name),{key}));
+  const [c,v]=drives;
+  folder("Program Files",c); const users=folder("Users",c); folder("Windows",c);
+  for(const name of ["Novák","Svobodová","Veselý"])folder("Stažené soubory",folder(name,users));
+  for(const name of ["3. ročník","4. ročník","5. ročník"])folder(name,v);
+  clipboard=null; dragged=null; current=null; selected=null; expanded=new Set(); doc=null; $("admin").checked=false;
+  render(); statusText("Vyber disk ve stromu nebo vpravo.");
+}
+function statusText(text,warn=false){$("status").textContent=text;$("status").classList.toggle("warn",warn);}
+function reveal(dir){for(const n of chain(dir))expanded.add(n);}
+function navigate(dir){
+  current=dir;selected=null;if(dir)reveal(dir);render();
+  statusText(dir?"Otevřeno • "+pathOf(dir):"Vyber disk ve stromu nebo vpravo.");
+}
+function icon(n){
+  if(n.key)return el("span","drive "+n.key,n.key+":");
+  if(isDir(n)){const i=el("i","folder");i.setAttribute("aria-hidden","true");return i;}
+  return el("span","file-icon",apps[n.app].ext.toUpperCase());
+}
+function treeList(nodes){
+  const list=el("ul","tree");
+  for(const n of nodes){
+    const li=el("li"), row=el("div","tree-row"+(n===current?" active":""));
+    const children=sorted(n).filter(isDir);
+    if(children.length){
+      const open=expanded.has(n);
+      const t=btn(open?"▾":"▸",()=>{if(open)expanded.delete(n);else expanded.add(n);render();},"twist");
+      t.setAttribute("aria-label",(open?"Sbalit ":"Rozbalit ")+labelOf(n));t.setAttribute("aria-expanded",String(open));row.append(t);
+    }else row.append(el("span","spacer"));
+    const b=btn("",()=>navigate(n),"node");
+    b.setAttribute("aria-label",labelOf(n));if(n===current)b.setAttribute("aria-current","location");
+    b.append(icon(n),el("span","",n.name));row.append(b);li.append(row);
+    dragSource(b,n);dropTarget(row,n);
+    if(clipboard?.mode==="cut" && clipboard.source===n)row.classList.add("cut-item");
+    if(children.length&&expanded.has(n))li.append(treeList(children));list.append(li);
+  }
+  return list;
+}
+function render(){
+  $("tree").replaceChildren(treeList(drives));
+  const crumbs=$("crumbs");crumbs.replaceChildren(btn("Tento počítač",()=>navigate(null)));
+  for(const n of chain(current))crumbs.append(el("span","","›"),btn(labelOf(n),()=>navigate(n)));
+  $("up").disabled=!current;
+  $("heading").textContent=current?labelOf(current):"Tento počítač";
+  $("access").textContent=current?(editable(current)?"Můžeš měnit obsah":"Jen ke čtení"):"3 disky";
+  const target=selected||current;
+  for(const id of ["rename","cut","copy","delete"])$(id).disabled=!target||!!target.key;
+  $("create").disabled=!current;
+  $("paste").disabled=!clipboard||!current;
+  const note=$("clipNote");note.hidden=!clipboard;
+  note.textContent=clipboard?clipboard.message:"";
+  const area=$("contents");area.replaceChildren();
+  dropTarget(area,current);
+  if(!current){
+    const cards=el("div","cards");
+    for(const n of drives){const b=btn("",()=>navigate(n),"card");b.append(icon(n),el("strong","",n.name),el("span","small",driveTips[n.key]));dropTarget(b,n);cards.append(b);}
+    area.append(cards);return;
+  }
+  if(!current.children.length){area.append(el("p","empty","Tato složka je prázdná."));return;}
+  const list=el("div","list");
+  for(const n of sorted(current)){
+    const row=el("div","row"+(n===selected?" chosen":""));
+    const open=()=>isDir(n)?navigate(n):openEditor(n.app,n);
+    const b=btn("",()=>{
+      selected=n;
+      for(const sibling of list.children){sibling.classList.remove("chosen");sibling.firstElementChild.setAttribute("aria-pressed","false");}
+      row.classList.add("chosen");b.setAttribute("aria-pressed","true");
+      for(const id of ["rename","cut","copy","delete"])$(id).disabled=false;
+      statusText("Vybráno • "+pathOf(n));
+    },"row-main");
+    b.append(icon(n),el("span","",n.name));b.setAttribute("aria-pressed",String(selected===n));b.ondblclick=open;
+    const go=btn("Otevřít",open,"open");go.setAttribute("aria-label","Otevřít "+n.name);
+    dragSource(b,n);
+    if(isDir(n))dropTarget(row,n);
+    if(clipboard?.mode==="cut" && clipboard.source===n)row.classList.add("cut-item");
+    row.append(b,go);list.append(row);
+  }
+  area.append(list);
+}
+function ask(title,text,yes,accept){
+  $("confirmTitle").textContent=title;$("confirmText").textContent=text;$("yes").textContent=yes;
+  $("yes").onclick=()=>{$("confirmation").close();accept();};
+  $("confirmation").showModal();$("no").focus();
+}
+$("no").onclick=()=>$("confirmation").close();
+function form(title,actionLabel,submit,build){
+  const body=$("formBody");body.replaceChildren();$("formTitle").textContent=title;
+  const error=el("p","error");error.setAttribute("role","alert");
+  build(body,error);
+  const actions=el("div","actions");
+  const apply=()=>{error.textContent=submit()||"";};
+  const ok=btn(actionLabel,apply,"primary");
+  actions.append(btn("Zrušit",()=>$("formDialog").close()),ok);body.append(error,actions);
+  body.onkeydown=e=>{
+    if(e.key==="Enter" && e.target.tagName==="INPUT" && !e.isComposing){
+      e.preventDefault();
+      if(!e.repeat)apply();
+    }
+  };
+  $("formDialog").showModal();
+}
+function field(body,title,input,id){
+  const label=el("label","",title);input.id=id;label.htmlFor=id;body.append(label,input);
+}
+function nameDialog(rename){
+  const n=selected||current;
+  const parent=rename?n?.parent:current;
+  if(!parent)return;
+  if(!editable(parent)){statusText(denied(parent),true);return;}
+  const input=el("input");input.maxLength=120;input.autocomplete="off";input.value=rename?n.name:"";
+  form(rename?"Přejmenovat položku":"Nová složka",rename?"Přejmenovat":"Vytvořit",()=>{
+    const name=input.value.trim().normalize("NFC");
+    const invalid=nameError(name);if(invalid)return invalid;
+    const conflict=findName(parent,name);
+    if(conflict && (!rename||conflict!==n))return "Tento název je ve složce už obsazený.";
+    if(rename&&!isDir(n)&&!name.toLowerCase().endsWith("."+apps[n.app].ext))return "Ponech příponu ."+apps[n.app].ext+".";
+    if(rename)n.name=name;else selected=folder(name,parent);
+    reveal(parent);$("formDialog").close();render();statusText((rename?"Přejmenováno • ":"Vytvořeno • ")+pathOf(rename?n:selected));
+  },body=>{body.append(el("p","where",pathOf(parent)));field(body,rename?"Nový název":"Název složky",input,"nameInput");});
+  input.focus();input.select();
+}
+function removeEntry(n){n.parent.children.splice(n.parent.children.indexOf(n),1);}
+function deleteEntry(){
+  const n=selected||current;if(!n?.parent)return;
+  if(!editable(n)){statusText(denied(n),true);return;}
+  ask("Smazat "+(isDir(n)?"složku":"soubor")+"?",pathOf(n)+(isDir(n)?" se smaže včetně celého obsahu.":" se smaže."),"Smazat",()=>{
+    if(chain(current).includes(n))current=n.parent;
+    if(clipboard?.mode==="cut" && chain(clipboard.source).includes(n))clipboard=null;
+    removeEntry(n);selected=null;
+    for(const node of expanded)if(chain(node).includes(n))expanded.delete(node);
+    render();statusText("Smazáno • "+n.name);
+  });
+}
+// Výběr umístění v okně Uložit jako.
+function destinationPicker(body,initial,onChange,onFile){
+  let dir=initial;
+  const disk=el("select");field(body,"Disk",disk,"diskChoice");
+  drives.forEach((d,i)=>{const option=el("option","",labelOf(d));option.value=String(i);disk.append(option);});
+  const pathRow=el("div","picker-path");
+  const up=btn("↑",()=>show(dir.parent));up.setAttribute("aria-label","O složku výš");
+  const path=el("span","where"), list=el("div","picker-list");pathRow.append(up,path);body.append(pathRow,list);
+  function show(next){
+    dir=next;disk.value=String(drives.indexOf(driveOf(dir)));up.disabled=!dir.parent;
+    path.textContent=pathOf(dir);list.replaceChildren();onChange(dir);
+    const items=sorted(dir).filter(n=>isDir(n)||onFile);
+    if(!items.length)list.append(el("p","empty",onFile?"Tato složka je prázdná.":"Žádné další podsložky."));
+    for(const n of items){
+      const b=btn("",()=>isDir(n)?show(n):onFile(n));
+      b.append(icon(n),el("span","",n.name));list.append(b);
+    }
+  }
+  disk.onchange=()=>show(drives[Number(disk.value)]);show(initial);
+}
+function cloneEntry(n,parent=null){
+  if(!isDir(n))return {name:n.name,app:n.app,content:copyContent(n.content),parent};
+  const copy=folder(n.name);
+  copy.parent=parent;
+  copy.children=n.children.map(child=>cloneEntry(child,copy));
+  return copy;
+}
+function remember(mode){
+  const n=selected||current;
+  if(!n?.parent)return;
+  if(mode==="cut" && !editable(n)){statusText(denied(n),true);return;}
+  const place=pathOf(n.parent);
+  const verb=isDir(n)?(mode==="cut"?"vyjmuta":"zkopírována"):(mode==="cut"?"vyjmut":"zkopírován");
+  const message=(isDir(n)?"Složka":"Soubor")+" „"+n.name+"“ "+(isDir(n)?"byla":"byl")+" "+verb+" z „"+place+"“ do schránky v paměti počítače. Otevři cílovou složku a klikni na Vložit.";
+  clipboard={mode,source:n,entry:mode==="cut"?n:cloneEntry(n),message};
+  render();statusText(mode==="cut"?"Položka se přesune, až ji vložíš.":"Na původním místě zůstává originál.");
+}
+function duplicateName(dest,n){
+  const dot=isDir(n)?-1:n.name.lastIndexOf(".");
+  const stem=dot>0?n.name.slice(0,dot):n.name, ext=dot>0?n.name.slice(dot):"";
+  for(let i=1;;i++){
+    const suffix=i===1?" – kopie":" – kopie ("+i+")";
+    const name=stem.slice(0,Math.max(1,120-suffix.length-ext.length))+suffix+ext;
+    if(!findName(dest,name))return name;
+  }
+}
+function transfer(job,dest){
+  if(!job||!dest)return;
+  const {mode,entry,source}=job, moving=mode==="cut";
+  if(!editable(dest)){statusText(denied(dest),true);return;}
+  if(moving && !editable(source)){statusText(denied(source),true);return;}
+  if(chain(dest).includes(source)){statusText("Vyber místo mimo tuto složku a její podsložky.",true);return;}
+  if(moving && dest===source.parent){statusText("Položka už je v této složce. Otevři jinou cílovou složku.",true);return;}
+  let name=entry.name;
+  let existing=findName(dest,name);
+  if(!moving && existing===source){name=duplicateName(dest,entry);existing=null;}
+  if(existing && (isDir(existing)||isDir(entry))){statusText("Tento název už v cílové složce existuje. Vyber jiné místo nebo položku přejmenuj.",true);return;}
+  const commit=()=>{
+    const result=moving?source:cloneEntry(entry);
+    if(moving)removeEntry(source);
+    if(existing){
+      if(clipboard?.mode==="cut" && clipboard.source===existing)clipboard=null;
+      removeEntry(existing);
+    }
+    result.parent=dest;result.name=name;dest.children.push(result);
+    if(moving && clipboard?.mode==="cut" && clipboard.source===source)clipboard=null;
+    current=dest;selected=result;reveal(dest);render();
+    statusText((moving?"Přesunuto":"Zkopírováno")+" • "+pathOf(result));
+  };
+  if(existing)ask("Chcete soubor nahradit?",pathOf(existing)+" už existuje.","Nahradit",commit);
+  else commit();
+}
+function dragSource(element,n){
+  if(!n.parent)return;
+  element.draggable=true;
+  element.ondragstart=e=>{
+    dragged=n;e.dataTransfer.effectAllowed=editable(n)?"copyMove":"copy";
+    e.dataTransfer.setData("text/plain",n.name);
+    statusText("Přetáhni položku na složku. Na stejném disku se přesune, na jiném se zkopíruje. Ctrl vynutí kopii.");
+  };
+  element.ondragend=clearDrag;
+}
+function clearDrag(){
+  dragged=null;
+  for(const target of document.querySelectorAll(".drop-target"))target.classList.remove("drop-target");
+}
+function dropTarget(element,dest){
+  const mode=e=>e.ctrlKey||!editable(dragged)||driveOf(dragged)!==driveOf(dest)?"copy":"cut";
+  element.ondragover=e=>{
+    if(!dragged||!dest)return;
+    e.preventDefault();e.stopPropagation();
+    e.dataTransfer.dropEffect=mode(e)==="copy"?"copy":"move";
+    element.classList.add("drop-target");
+  };
+  element.ondragleave=e=>{
+    if(!element.contains(e.relatedTarget))element.classList.remove("drop-target");
+  };
+  element.ondrop=e=>{
+    if(!dragged||!dest)return;
+    e.preventDefault();e.stopPropagation();
+    const source=dragged,action=mode(e);clearDrag();
+    element.classList.remove("drop-target");
+    transfer({mode:action,source,entry:source},dest);
+  };
+}
+function menu(open){$("dropdown").hidden=!open;$("fileMenu").setAttribute("aria-expanded",String(open));}
+function closeEditor(){
+  const close=()=>{$("editor").close();menu(false);doc=null;};
+  if(doc?.dirty){ask("Zavřít bez uložení?","Poslední změny v programu se zahodí.","Zavřít bez uložení",close);}
+  else close();
+}
+function markDirty(){doc.dirty=true;$("editorStatus").textContent="Změny čekají na uložení.";}
+function drawing(area){
+  const canvas=el("canvas","paint paper");canvas.width=720;canvas.height=220;
+  canvas.setAttribute("aria-label","Plátno pro kreslení jednou tužkou");area.append(canvas);
+  const ctx=canvas.getContext("2d");ctx.lineWidth=4;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle=ctx.fillStyle="#1c6451";
+  function dot(point){ctx.beginPath();ctx.arc(point[0],point[1],2,0,Math.PI*2);ctx.fill();}
+  function segment(a,b){ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();}
+  for(const stroke of doc.content){dot(stroke[0]);for(let i=1;i<stroke.length;i++)segment(stroke[i-1],stroke[i]);}
+  let pointer=null,stroke;
+  function point(e){const r=canvas.getBoundingClientRect();return [(e.clientX-r.left)*canvas.width/r.width,(e.clientY-r.top)*canvas.height/r.height];}
+  canvas.onpointerdown=e=>{
+    if(pointer!==null||e.button!==0)return;
+    pointer=e.pointerId;canvas.setPointerCapture(pointer);stroke=[point(e)];doc.content.push(stroke);dot(stroke[0]);markDirty();
+  };
+  canvas.onpointermove=e=>{
+    if(e.pointerId!==pointer)return;
+    const p=point(e);segment(stroke[stroke.length-1],p);stroke.push(p);
+  };
+  canvas.onlostpointercapture=()=>{pointer=null;};
+}
+function copyContent(content){
+  return typeof content==="string" ? content : content.map(stroke=>stroke.map(point=>point.slice()));
+}
+function openEditor(app,file=null){
+  const spec=apps[app];
+  doc={app,file,content:file?copyContent(file.content):app==="paint"?[]:"",dirty:false};
+  const area=$("workarea");area.replaceChildren();menu(false);
+  $("editorTitle").textContent=spec.name+" · "+(file?file.name:"Nový soubor");
+  $("editorStatus").textContent=file?pathOf(file):"Ulož práci přes Soubor → Uložit jako.";
+  if(app==="paint")drawing(area);
+  else{
+    const slide=app==="slide";const box=slide?el("div","paper slide-page"):area;
+    if(slide)area.append(box);
+    const input=el(slide?"input":"textarea");input.maxLength=slide?60:160;input.value=doc.content;
+    field(box,slide?"Nadpis snímku":"Krátká poznámka",input,"editorInput");
+    input.oninput=()=>{doc.content=input.value;markDirty();};
+  }
+  $("editor").showModal();$("fileMenu").focus();
+}
+function saveAs(){
+  menu(false);
+  const spec=apps[doc.app], input=el("input");
+  input.maxLength=120;input.autocomplete="off";input.value=doc.file?.name||spec.initial+"."+spec.ext;
+  let dest=doc.file?.parent||current||drives[2];
+  function commit(name,existing){
+    let entry=existing;
+    if(!entry){entry={name,parent:dest,app:doc.app};dest.children.push(entry);}
+    entry.content=copyContent(doc.content);doc.file=entry;doc.dirty=false;
+    current=dest;selected=entry;reveal(dest);render();
+    $("formDialog").close();$("editorTitle").textContent=spec.name+" · "+entry.name;
+    const feedback="Uloženo • "+pathOf(entry);$("editorStatus").textContent=feedback;statusText(feedback);
+  }
+  form("Uložit jako","Uložit",()=>{
+    if(!editable(dest))return denied(dest);
+    let name=input.value.trim().normalize("NFC");
+    const invalid=nameError(name);if(invalid)return invalid;
+    if(!name.toLowerCase().endsWith("."+spec.ext))name+="."+spec.ext;
+    const fullError=nameError(name);if(fullError)return fullError;
+    const existing=findName(dest,name);
+    if(existing&&isDir(existing))return "Tento název už má složka. Napiš jiný název souboru.";
+    if(existing){
+      ask("Chcete soubor nahradit?",pathOf(existing)+" už existuje. Nahrazením se uloží nový obsah.","Nahradit",()=>commit(name,existing));
+    }else commit(name,null);
+  },(body,error)=>{
+    destinationPicker(body,dest,d=>{dest=d;error.textContent="";},file=>{
+      if(file.app===doc.app){input.value=file.name;error.textContent="";}else error.textContent="Tento soubor patří jinému programu.";
+    });
+    field(body,"Název souboru",input,"saveName");input.oninput=()=>{error.textContent="";};
+  });
+  input.focus();input.setSelectionRange(0,input.value.lastIndexOf("."));
+}
+for(const [key,spec] of Object.entries(apps)){
+  const b=btn("",()=>openEditor(key),"program");const i=el("span","app-icon "+key,spec.icon);i.setAttribute("aria-hidden","true");b.append(i,el("span","",spec.name));$("programs").append(b);
+}
+$("up").onclick=()=>navigate(current?.parent||null);
+$("create").onclick=()=>nameDialog(false);$("rename").onclick=()=>nameDialog(true);
+$("cut").onclick=()=>remember("cut");$("copy").onclick=()=>remember("copy");
+$("paste").onclick=()=>transfer(clipboard,current);$("delete").onclick=deleteEntry;
+$("reset").onclick=()=>ask("Začít znovu?","Ukázkové disky se vrátí do výchozího stavu. Vytvořené soubory a složky se smažou.","Začít znovu",reset);
+$("admin").onchange=()=>{render();statusText($("admin").checked?"Režim správce • Obsah všech disků můžeš měnit.":"Režim žáka • Vlastní práci ukládej na osobní disk (U:).");};
+$("fileMenu").onclick=()=>{menu($("dropdown").hidden);if(!$("dropdown").hidden)$("saveAs").focus();};
+$("editor").addEventListener("click",e=>{if(!e.target.closest(".menu"))menu(false);});
+$("editor").addEventListener("cancel",e=>{
+  e.preventDefault();
+  if(!$("dropdown").hidden){menu(false);$("fileMenu").focus();}else closeEditor();
+});
+$("closeEditor").onclick=closeEditor;$("saveAs").onclick=saveAs;
+reset();
+</script></body></html>
